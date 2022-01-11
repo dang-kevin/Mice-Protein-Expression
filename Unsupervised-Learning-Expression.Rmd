@@ -362,7 +362,8 @@ data.frame(Class, Genotype, Behaviour, Treatment, Count) %>%
 
 ```{r figHCsil, echo=F, fig.width=8, fig.cap="\\label{fig:figHCsil}Silhouette Width, Hierarchical Clustering"}
 
-# Hierarchical clustering silhouette width
+## Hierarchical clustering silhouette width
+
 hc.sil.width <- c()
 for(i in 1:9){
   cut.tree <- cutree(hc.complete, k = i+1)
@@ -384,7 +385,7 @@ data.frame(k = 2:10, hc.sil.width) %>%
 
 ```{r figKMsil, echo=F, fig.width=8, fig.cap="\\label{fig:figKMsil}Silhouette Width, K-Means Clustering"}
 
-# K-means Silhouette Width
+## K-means Silhouette Width
 
 set.seed(8)
 
@@ -410,7 +411,7 @@ data.frame(k = 2:10, km.sil.width) %>%
 
 ```{r figPAMsil, echo=F, fig.width=8, fig.cap="\\label{fig:figPAMsil}Silhouette Width, Partitioning Around Medoids"}
 
-# PAM Silhouette Width
+## PAM Silhouette Width
 
 set.seed(8)
 
