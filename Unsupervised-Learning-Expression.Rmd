@@ -27,10 +27,9 @@ In the Methods section, the unsupervised learning methods are discussed. In the 
 
 # Methods
 
-The data set contains 1080 measurements per protein for 77 proteins, which were recorded from a sample of 72 mice. This works out to 15 measurements of each protein per mouse. There are additional variables such as the `Genotype`, `Treatment`, `Behavior` and `class`, where `class` combines the other three variables into one. In Appendix Table \ref{tab:Mice} there is a description of the 8 mice classes and how they relate to the other three variables. 
+The data set contains 1080 measurements per protein for 77 proteins, which were recorded from a sample of 72 mice. This works out to 15 measurements of each protein per mouse. There are additional variables such as the `Genotype`, `Treatment`, `Behavior` and `class`, where `class` combines the other three variables into one. In Appendix Table \ref{tab:tabmice} there is a description of the 8 mice classes and how they relate to the other three variables. 
 
 There was a considerable amount of missing values in 5 proteins, ranging between 17% to 25% missing values so these 5 proteins were removed from the data. The remaining 72 proteins each had less than 2% missing values so these values were imputed with mean imputation.
-
 
 The average silhouette width was used for selecting the optimal number of clusters for hierarchical clustering, k-means clustering, and partitioning around medoids. Silhouette width is simply a measure of average dissimilarity, which allows us to identify how different the clusters are from one another. The values range from -1 to 1, where a higher width indicates better clustering results. Principal component analysis is a different type of unsupervised learning method that does not involve clustering so there are no parameters (e.g. number of clusters) that require optimization. The four methods are explained in the following sections.
 
@@ -49,7 +48,7 @@ Principal component analysis (PCA) is a dimension reduction and data compression
 
 # Results
 
-```{r, include=F}
+```{r library, include=F}
 
 # Load packages and set theme
 library(tidyverse)
@@ -60,6 +59,11 @@ library(reshape2)
 library(cowplot)
 
 theme_set(theme_bw())
+
+```
+
+
+```{r load, include=F}
 
 # Load data, take a look at its variables and summary
 mouse <- read.csv("Data_Cortex_Nuclear.csv")
@@ -89,12 +93,12 @@ x <- data %>% select_if(is.numeric)
 
 ## Hierarchical Clustering
 
-According to Appendix Figure \ref{fig:HCsil} the optimal number of clusters is 3. In Table \ref{tab:HC}, cluster 3 contains one distinct class `c-CS-s`. This class represents control mice that were stimulated to learn and injected with saline.
+According to Appendix Figure \ref{fig:figHCsil} the optimal number of clusters is 3. In Table \ref{tab:tabHC}, cluster 3 contains one distinct class `c-CS-s`. This class represents control mice that were stimulated to learn and injected with saline.
 
-In Figure \ref{fig:HCheat}, we see that the pPKCG protein has relatively high expression levels in clusters 1 and 2, and a low expression level in cluster 3. Conversely, the Bcatenin, ERK, and NR2A proteins have high expression levels in cluster 3 and lower expression levels in 1 and 2. These four proteins along with several others may have played a key role in creating the distinct cluster.
+In Figure \ref{fig:figHCheat}, we see that the pPKCG protein has relatively high expression levels in clusters 1 and 2, and a low expression level in cluster 3. Conversely, the Bcatenin, ERK, and NR2A proteins have high expression levels in cluster 3 and lower expression levels in 1 and 2. These four proteins along with several others may have played a key role in creating the distinct cluster.
 
 
-```{r, echo=F}
+```{r tabHC, echo=F}
 
 ### Analysis ###
 
@@ -116,13 +120,13 @@ hc.tab <- hc.data %>%
 
 # Cluster 3 is able to distinguish one class quite well
 cbind(Cluster = 1:3, hc.tab) %>%
-  kbl(caption = "\\label{tab:HC}Hierarchical Clustering with Complete Linkage, Breakdown by Class") %>%
+  kbl(caption = "\\label{tab:tabHC}Hierarchical Clustering with Complete Linkage, Breakdown by Class") %>%
   add_header_above(c(" " = 1, "Class" = 8)) %>%
   kable_styling(latex_options = "hold_position")
 ```
 
 
-```{r, echo=F, fig.width=8, fig.height=10, fig.cap="\\label{fig:HCheat}Heatmap of Protein Expression Levels by Cluster, Hierarchical Clustering"}
+```{r figHCheat, echo=F, fig.width=8, fig.height=10, fig.cap="\\label{fig:figHCheat}Heatmap of Protein Expression Levels by Cluster, Hierarchical Clustering"}
 
 # Creating the heatmap for hierarchical clustering
 
@@ -151,9 +155,9 @@ hc.long %>%
 
 ## K-Means Clustering
 
-The optimal number of clusters for k-means is also 3 (by Appendix Figure \ref{fig:KMsil}). The results are in Table \ref{tab:KM}, and we can see that there are no clusters that are associated with one particular class like in hierarchical clustering. However, Table \ref{tab:KMbehav} shows that in cluster 1 there are a total of 61 observations for mice that were stimulated to learn (`C/S`) versus 271 observations that were not stimulated to learn (`S/C`). Consequently, cluster 3 has an imbalance in the opposite direction, with 221 `C/S` observations, and 61 `S/C` observations.
+The optimal number of clusters for k-means is also 3 (by Appendix Figure \ref{fig:figKMsil}). The results are in Table \ref{tab:tabKM}, and we can see that there are no clusters that are associated with one particular class like in hierarchical clustering. However, Table \ref{tab:tabKMbehav} shows that in cluster 1 there are a total of 61 observations for mice that were stimulated to learn (`C/S`) versus 271 observations that were not stimulated to learn (`S/C`). Consequently, cluster 3 has an imbalance in the opposite direction, with 221 `C/S` observations, and 61 `S/C` observations.
 
-```{r, echo=F}
+```{r tabKM, echo=F}
 
 # Set seed for reproducibility due to randomness of k-means
 set.seed(8)
@@ -170,9 +174,13 @@ km.tab <- km.data %>%
 
 # No distinct classes, but behaviour looks imbalanced
 cbind(Cluster = 1:3, km.tab) %>%
-  kbl(caption = "\\label{tab:KM}K-Means Clustering, Breakdown by Class") %>%
+  kbl(caption = "\\label{tab:tabKM}K-Means Clustering, Breakdown by Class") %>%
   add_header_above(c(" " = 1, "Class" = 8)) %>%
   kable_styling(latex_options = "hold_position")
+```
+
+
+```{r tabKMbehav, echo=F}
 
 km.behav <- km.data %>%
   select(Cluster,Behavior) %>%
@@ -180,7 +188,7 @@ km.behav <- km.data %>%
 
 # Breakdown by behaviour
 cbind(Cluster = 1:3, km.behav) %>%
-  kbl(caption = "\\label{tab:KMbehav}K-Means Clustering, Breakdown by Behaviour") %>%
+  kbl(caption = "\\label{tab:tabKMbehav}K-Means Clustering, Breakdown by Behaviour") %>%
   add_header_above(c(" " = 1, "Behaviour" = 2)) %>%
   kable_styling(latex_options = "hold_position")
 ```
@@ -188,9 +196,9 @@ cbind(Cluster = 1:3, km.behav) %>%
 
 ## Partitioning Around Medoids
 
-Similar to k-means clustering, the optimal number of clusters for PAM is also 3 (by Appendix Figure \ref{fig:PAMsil}). Interestingly, Table \ref{tab:PAM} shows an imbalance between the two behaviours (`C/S`: stimulated to learn, `S/C`: not stimulated to learn) in clusters 1 and 3. Table \ref{tab:PAMbehav} provides the numbers: in cluster 1, there are 265 observations belonging to `C/S`, and just 45 for the `S/C` behaviour. Cluster 3 shows the opposite imbalance, with 85 in `C/S` and 329 in `S/C`. The clusters formed by PAM are quite similar to the k-means clusters. Additionally, their heatmaps for protein expression levels by clusters in Figure \ref{fig:KMPAM} are almost identical with some very minor differences. One concerning detail is that there are no visible differences between clusters 1 and 3 for both methods, so it is possible that the imbalance between the two mice behaviours in these clusters may have been due to random chance.
+Similar to k-means clustering, the optimal number of clusters for PAM is also 3 (by Appendix Figure \ref{fig:figPAMsil}). Interestingly, Table \ref{tab:tabPAM} shows an imbalance between the two behaviours (`C/S`: stimulated to learn, `S/C`: not stimulated to learn) in clusters 1 and 3. Table \ref{tab:tabPAMbehav} provides the numbers: in cluster 1, there are 265 observations belonging to `C/S`, and just 45 for the `S/C` behaviour. Cluster 3 shows the opposite imbalance, with 85 in `C/S` and 329 in `S/C`. The clusters formed by PAM are quite similar to the k-means clusters. Additionally, their heatmaps for protein expression levels by clusters in Figure \ref{fig:figKMPAM} are almost identical with some very minor differences. One concerning detail is that there are no visible differences between clusters 1 and 3 for both methods, so it is possible that the imbalance between the two mice behaviours in these clusters may have been due to random chance.
 
-```{r, echo=F, fig.width=8}
+```{r tabPAM, echo=F, fig.width=8}
 
 # Set seed again due to randomness of PAM, and new code chunk
 set.seed(8)
@@ -207,9 +215,13 @@ pam.tab <- pam.data %>%
 
 # No distinct classes, but behaviour looks imbalanced
 cbind(Cluster = 1:3, pam.tab) %>%
-  kbl(caption = "\\label{tab:PAM}Partitioning Around Medoids, Breakdown by Class") %>%
+  kbl(caption = "\\label{tab:tabPAM}Partitioning Around Medoids, Breakdown by Class") %>%
   add_header_above(c(" " = 1, "Class" = 8)) %>%
   kable_styling(latex_options = "hold_position")
+```
+
+
+```{r tabPAMbehav, echo=F, fig.width=8}
 
 pam.behav <- pam.data %>%
   select(Cluster,Behavior) %>%
@@ -217,13 +229,13 @@ pam.behav <- pam.data %>%
 
 # Breakdown by behaviour
 cbind(Cluster = 1:3, pam.behav) %>%
-  kbl(caption = "\\label{tab:PAMbehav}Partitioning Around Medoids, Breakdown by Behaviour") %>%
+  kbl(caption = "\\label{tab:tabPAMbehav}Partitioning Around Medoids, Breakdown by Behaviour") %>%
   add_header_above(c(" " = 1, "Behaviour" = 2)) %>%
   kable_styling(latex_options = "hold_position")
 ```
 
 
-```{r, echo=F, fig.width=10, fig.height=13, fig.cap="\\label{fig:KMPAM}Heatmap of Protein Expression Levels by Cluster, K-Means & PAM"}
+```{r figKMPAM, echo=F, fig.width=10, fig.height=13, fig.cap="\\label{fig:figKMPAM}Heatmap of Protein Expression Levels by Cluster, K-Means & PAM"}
 
 # Creating the heatmap for both k-means and PAM
 
@@ -272,9 +284,9 @@ plot_grid(title,
 
 ## Principal Component Analysis
 
-The cumulative proportion of variance explained is shown in Figure \ref{fig:PCAvar}. While the first two components only explain 43% of the variance, 80% of variance explained is achieved at the ninth principal component. This result is quite good for a data set containing 77 proteins. Figure \ref{fig:PCAclass} visualizes the classes with just the first two principal components which is not ideal, however it is important to note that principal components do not need to be two-dimensional.
+The cumulative proportion of variance explained is shown in Figure \ref{fig:figPCAvar}. While the first two components only explain 43% of the variance, 80% of variance explained is achieved at the ninth principal component. This result is quite good for a data set containing 77 proteins. Figure \ref{fig:figPCAclass} visualizes the classes with just the first two principal components which is not ideal, however it is important to note that principal components do not need to be two-dimensional.
 
-```{r, echo=F, fig.width=9, fig.cap="\\label{fig:PCAvar}Principal Component Analysis, Cumulative Proportion of Variance Explained"}
+```{r figPCAvar, echo=F, fig.width=9, fig.cap="\\label{fig:figPCAvar}Principal Component Analysis, Cumulative Proportion of Variance Explained"}
 
 # Apply PCA to the mouse data
 pr.out <- prcomp(x, scale = T)
@@ -295,7 +307,7 @@ data.frame(pc = 1:length(pve), cs = cumsum(pve)) %>%
 ```
 
 
-```{r, echo=F, fig.width=9, fig.cap="\\label{fig:PCAclass}Principal Component Analysis, first two components"}
+```{r figPCAclass, echo=F, fig.width=9, fig.cap="\\label{fig:figPCAclass}Principal Component Analysis, first two components"}
 
 # 2D visualization of first 2 PC's, not that useful in this instance but looks cool
 data.frame(pr.out$x[,1:2], Class = data$class) %>%
@@ -320,7 +332,7 @@ In the analysis we assumed that the samples were independent, when they are in f
 
 ## Tables
 
-```{r, echo=F}
+```{r tabmice, echo=F}
 
 # Table for mice classes
 Class <- c("c-CS-s", "c-CS-m", "c-SC-s", "c-SC-m", 
@@ -340,7 +352,7 @@ Treatment <- c("saline", "memantine", "saline", "memantine",
 Count <- c(9, 10, 9, 10, 7, 9, 9, 9)
 
 data.frame(Class, Genotype, Behaviour, Treatment, Count) %>%
-  kbl(caption = "\\label{tab:Mice}Mice Classes", 
+  kbl(caption = "\\label{tab:tabmice}Mice Classes", 
       align = "l") %>%
   kable_styling(latex_options = "hold_position")
 ```
@@ -348,9 +360,9 @@ data.frame(Class, Genotype, Behaviour, Treatment, Count) %>%
 
 ## Figures
 
-```{r, echo=F, fig.width=8, fig.cap="\\label{fig:HCsil}Silhouette Width, Hierarchical Clustering"}
+```{r figHCsil, echo=F, fig.width=8, fig.cap="\\label{fig:figHCsil}Silhouette Width, Hierarchical Clustering"}
 
-## Hierarchical clustering silhouette width
+# Hierarchical clustering silhouette width
 hc.sil.width <- c()
 for(i in 1:9){
   cut.tree <- cutree(hc.complete, k = i+1)
@@ -370,7 +382,7 @@ data.frame(k = 2:10, hc.sil.width) %>%
 ```
 
 
-```{r, echo=F, fig.width=8, fig.cap="\\label{fig:KMsil}Silhouette Width, K-Means Clustering"}
+```{r figKMsil, echo=F, fig.width=8, fig.cap="\\label{fig:figKMsil}Silhouette Width, K-Means Clustering"}
 
 # K-means Silhouette Width
 
@@ -396,9 +408,9 @@ data.frame(k = 2:10, km.sil.width) %>%
 ```
 
 
-```{r, echo=F, fig.width=8, fig.cap="\\label{fig:PAMsil}Silhouette Width, Partitioning Around Medoids"}
+```{r figPAMsil, echo=F, fig.width=8, fig.cap="\\label{fig:figPAMsil}Silhouette Width, Partitioning Around Medoids"}
 
-## PAM Silhouette Width
+# PAM Silhouette Width
 
 set.seed(8)
 
